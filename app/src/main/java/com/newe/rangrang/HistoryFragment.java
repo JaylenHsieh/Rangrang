@@ -53,11 +53,12 @@ public class HistoryFragment extends Fragment {
         HistoryBean h4 = new HistoryBean("2018年4月21日 19:23:10","杭州电子科技大学学源街",R.mipmap.img_road);
         HistoryBean h5 = new HistoryBean("2018年4月21日 13:22:12","杭州电子科技大学学源街",R.mipmap.img_road);
         HistoryBean h6 = new HistoryBean("2018年4月21日 16:21:09","杭州电子科技大学学源街",R.mipmap.img_road);
-        mHistoryList.add(h1);
-        mHistoryList.add(h2);
-        mHistoryList.add(h3);
-        mHistoryList.add(h4);
-        mHistoryList.add(h5);
         mHistoryList.add(h6);
+        mHistoryList.add(h5);
+        mHistoryList.add(h4);
+        mHistoryList.add(h3);
+        mHistoryList.add(h2);
+        mHistoryList.add(h1);
+
     }
 }

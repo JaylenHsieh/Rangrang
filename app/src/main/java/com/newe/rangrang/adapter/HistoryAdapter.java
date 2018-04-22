@@ -24,12 +24,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         ImageView photo;
         TextView time;
         TextView location;
+        TextView btnDalete;
 
         public MyViewHolder(View view){
             super(view);
             photo = view.findViewById(R.id.img_photo);
             time = view.findViewById(R.id.tv_time);
             location = view.findViewById(R.id.tv_location);
+            btnDalete = view.findViewById(R.id.tv_delete);
         }
     }
 
@@ -42,6 +44,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_history, parent,false);
         final MyViewHolder holder = new MyViewHolder(view);
+        holder.btnDalete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = holder.getAdapterPosition();
+                mHistoryList.remove(position);
+                notifyItemRemoved(position);
+            }
+        });
         return holder;
     }
 

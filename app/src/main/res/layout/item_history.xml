@@ -6,14 +6,12 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_list"
     android:padding="16dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
     android:layout_marginBottom="8dp">
 
     <ImageView
         android:id="@+id/img_photo"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:scaleType="centerCrop"
         android:src="@mipmap/img_road"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,5 +53,17 @@
         android:text="杭州电子科技大学学源街"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/tv_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_history_button"
+        android:text="删除"
+        android:textColor="#ff3029"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_location"
+        app:layout_constraintTop_toBottomOf="@+id/tv_location" />
 
 </android.support.constraint.ConstraintLayout>
