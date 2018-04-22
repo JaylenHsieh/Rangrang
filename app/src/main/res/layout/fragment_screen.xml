@@ -6,9 +6,19 @@
     tools:context=".ScreenFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_sound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@mipmap/ic_volume_up_white_24dp"/>
+
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="屏幕图片模式" />
+        android:src="@mipmap/red"
+        android:scaleType="centerCrop"/>
 
 </FrameLayout>
