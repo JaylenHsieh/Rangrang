@@ -46,14 +46,20 @@ public class FlashFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        // 获取 context
         if (mContext == null) {
             mContext = getContext();
         }
+
+        // 动态权限申请
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
         }else {
             openTorch(true);
         }
+
+        // 获取相机管理器
         mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +80,9 @@ public class FlashFragment extends Fragment {
         });
     }
 
+    /**
+     * Fragment销毁时关闭闪光灯，避免占用硬件
+     */
     @Override
     public void onStop() {
         super.onStop();
@@ -87,6 +96,10 @@ public class FlashFragment extends Fragment {
         }
     }
 
+    /**
+     * 控制闪光灯的打开和关闭
+     * @param enable
+     */
     private void openTorch(boolean enable) {
         if (mCameraManager != null) {
             try {
@@ -98,6 +111,7 @@ public class FlashFragment extends Fragment {
     }
 
 
+    // 权限申请回调
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_REQUEST_CAMERA){

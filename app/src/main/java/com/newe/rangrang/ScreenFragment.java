@@ -45,7 +45,7 @@ public class ScreenFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (isTrumpetOn){
-                    // 如果扬声器是打开的，点击后关闭提示音，图标显示为喇叭关闭，提示用户已关闭提示音
+                    // 点击后，如果扬声器是打开的，关闭提示音，图标显示为喇叭关闭，提示用户已关闭提示音
                     mFab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_volume_off_white_24dp));
                     Toast.makeText(getContext(), "已关闭提示音", Toast.LENGTH_SHORT).show();
                     isTrumpetOn  = false;
