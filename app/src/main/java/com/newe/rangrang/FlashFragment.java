@@ -34,6 +34,9 @@ public class FlashFragment extends Fragment {
     private boolean isFlashOn = false;
     private boolean isGlitter = false;
 
+    Timer mTimer;
+    TimerTask mTimerTask;
+
 
     private ScheduledExecutorService mExecutorService;
 
@@ -62,6 +65,24 @@ public class FlashFragment extends Fragment {
             mContext = getContext();
         }
 
+        if (mTimer == null){
+            mTimer = new Timer();
+        }
+        if (mTimerTask == null){
+            mTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    if (isGlitter) {
+                        isGlitter = false;
+                        openTorch(false);
+                    } else {
+                        isGlitter = true;
+                        openTorch(true);
+                    }
+                }
+            };
+        }
+
         // 动态权限申请
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
@@ -71,7 +92,6 @@ public class FlashFragment extends Fragment {
 
         // 获取相机管理器
         mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
-        final Timer timer = new Timer();
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,32 +101,16 @@ public class FlashFragment extends Fragment {
                     Toast.makeText(getContext(), "已关闭闪光灯", Toast.LENGTH_SHORT).show();
                     isFlashOn = false;
                     openTorch(false);
+                    mTimer.cancel();
+                    mTimerTask.cancel();
                 } else {
                     mFab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_flash_on));
                     Toast.makeText(getContext(), "已打开闪光灯", Toast.LENGTH_SHORT).show();
                     isFlashOn = true;
                     openTorch(true);
+                    mTimer.schedule(mTimerTask,0,500);
                 }
 
-                // 如果闪光灯打开，设置定时器
-
-                if (isFlashOn) {
-                    TimerTask timerTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (isGlitter) {
-                                isGlitter = false;
-                                openTorch(false);
-                            } else {
-                                isGlitter = true;
-                                openTorch(true);
-                            }
-                        }
-                    };
-                    timer.schedule(timerTask, 0, 500);
-                }else {
-                    timer.cancel();
-                }
             }
         });
 
@@ -127,6 +131,8 @@ public class FlashFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+        mTimerTask.cancel();
+        mTimer.cancel();
     }
 
     /**
