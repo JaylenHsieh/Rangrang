@@ -37,14 +37,10 @@ public class HistoryFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.list_history);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(new HistoryAdapter(mHistoryList));
+        initList();
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        initList();
-    }
 
     private void initList(){
         HistoryBean h1 = new HistoryBean("2018年4月20日 15:28:49","杭州电子科技大学学源街",R.mipmap.img_road);

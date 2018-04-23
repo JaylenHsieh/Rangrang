@@ -16,6 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,6 +32,10 @@ public class FlashFragment extends Fragment {
     private Context mContext;
     private FloatingActionButton mFab;
     private boolean isFlashOn = false;
+    private boolean isGlitter = false;
+
+
+    private ScheduledExecutorService mExecutorService;
 
     private final int PERMISSION_REQUEST_CAMERA = 1;
 
@@ -55,12 +65,13 @@ public class FlashFragment extends Fragment {
         // 动态权限申请
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
-        }else {
+        } else {
             openTorch(true);
         }
 
         // 获取相机管理器
         mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
+        final Timer timer = new Timer();
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,8 +87,30 @@ public class FlashFragment extends Fragment {
                     isFlashOn = true;
                     openTorch(true);
                 }
+
+                // 如果闪光灯打开，设置定时器
+
+                if (isFlashOn) {
+                    TimerTask timerTask = new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (isGlitter) {
+                                isGlitter = false;
+                                openTorch(false);
+                            } else {
+                                isGlitter = true;
+                                openTorch(true);
+                            }
+                        }
+                    };
+                    timer.schedule(timerTask, 0, 500);
+                }else {
+                    timer.cancel();
+                }
             }
         });
+
+
     }
 
     /**
@@ -98,6 +131,7 @@ public class FlashFragment extends Fragment {
 
     /**
      * 控制闪光灯的打开和关闭
+     *
      * @param enable
      */
     private void openTorch(boolean enable) {
@@ -114,10 +148,10 @@ public class FlashFragment extends Fragment {
     // 权限申请回调
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_CAMERA){
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == PERMISSION_REQUEST_CAMERA) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openTorch(true);
-            }else{
+            } else {
                 Toast.makeText(mContext, "权限被拒绝，我们需要你的相机权限来打开闪光灯", Toast.LENGTH_SHORT).show();
             }
         }
