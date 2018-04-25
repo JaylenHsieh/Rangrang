@@ -1,7 +1,9 @@
 package com.newe.rangrang.bean;
 
 /**
- * Created by Jaylen Hsieh on 2018/04/22.
+ * 历史记录的实体类，用来存放历史记录的数据：时间，地点， （可缺省的）照片
+ * @author  Jaylen Hsieh
+ * @date 2018/04/22.
  */
 public class HistoryBean {
 

@@ -24,7 +24,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * 用于使用闪光灯功能的碎片
+ * @author Jaylen Hsieh
+ * @date 2018/04/22.
  */
 public class FlashFragment extends Fragment {
 
@@ -34,10 +36,11 @@ public class FlashFragment extends Fragment {
     private boolean isFlashOn = false;
     private boolean isGlitter = false;
 
+    //定时器，用来实现闪光操作
     Timer mTimer;
     TimerTask mTimerTask;
 
-
+    //代码提示告诉我要用这个代替Timer
     private ScheduledExecutorService mExecutorService;
 
     private final int PERMISSION_REQUEST_CAMERA = 1;
@@ -48,9 +51,9 @@ public class FlashFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_flash, container, false);
         mFab = view.findViewById(R.id.fab_flash);
         return view;
@@ -64,7 +67,6 @@ public class FlashFragment extends Fragment {
         if (mContext == null) {
             mContext = getContext();
         }
-
         if (mTimer == null){
             mTimer = new Timer();
         }
@@ -83,7 +85,7 @@ public class FlashFragment extends Fragment {
             };
         }
 
-        // 动态权限申请
+        // 动态权限申请，详细原因参见《第一行代码》7.2，相机为敏感权限
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
         } else {
@@ -138,7 +140,7 @@ public class FlashFragment extends Fragment {
     /**
      * 控制闪光灯的打开和关闭
      *
-     * @param enable
+     * @param enable true:开 , false:关
      */
     private void openTorch(boolean enable) {
         if (mCameraManager != null) {

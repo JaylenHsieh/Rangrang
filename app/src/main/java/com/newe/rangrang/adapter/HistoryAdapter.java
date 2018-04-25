@@ -14,7 +14,9 @@ import com.newe.rangrang.bean.HistoryBean;
 import java.util.List;
 
 /**
- * Created by Jaylen Hsieh on 2018/04/22.
+ * 用来适配历史记录实体类的适配器
+ * @author Jaylen Hsieh
+ * @date 2018/04/22.
  */
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHolder> {
 
@@ -26,7 +28,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         TextView location;
         TextView btnDalete;
 
-        public MyViewHolder(View view){
+        MyViewHolder(View view){
             super(view);
             photo = view.findViewById(R.id.img_photo);
             time = view.findViewById(R.id.tv_time);
