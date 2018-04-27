@@ -4,16 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
     android:background="@drawable/bg_list"
-    android:padding="16dp"
-    android:layout_marginBottom="8dp">
-
+    android:padding="16dp">
+    <!--这个属性似乎没有多大用处，其实主要是为了照顾一些生理功能有缺陷的人.
+    比如图片颜色复杂，可能一些色弱色盲的人分不清。如果用户安装了辅助浏览工具比如TalkBack,
+    TalkBack就会大声朗读出用户目前正在浏览的内容。TextView控件TalkBack可以直接读出里面的内容，
+    但是ImageView TalkBack就只能去读contentDescription的值。-->
     <ImageView
         android:id="@+id/img_photo"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:contentDescription="@string/history_bean_item_image_view_content_description"
         android:scaleType="centerCrop"
-        android:src="@mipmap/img_road"
+        tools:src="@mipmap/img_road"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="时间："
+        android:text="@string/history_bean_item_text_time"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/img_photo"
         app:layout_constraintTop_toTopOf="@+id/img_photo" />
@@ -31,7 +35,7 @@
         android:id="@+id/tv_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2018年4月20日 15:28:49"
+        tools:text="@string/history_bean_item_text_static_time_content"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/textView"
         app:layout_constraintTop_toTopOf="@+id/textView" />
@@ -41,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="地点："
+        android:text="@string/history_bean_item_text_static_location"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -50,7 +54,7 @@
         android:id="@+id/tv_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="杭州电子科技大学学源街"
+        tools:text="@string/history_bean_item_text_static_location_content"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="@+id/textView2" />
 
@@ -60,7 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_history_button"
-        android:text="删除"
+        android:text="@string/history_bean_item_text_delete"
         android:textColor="#ff3029"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/tv_location"

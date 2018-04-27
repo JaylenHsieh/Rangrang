@@ -3,4 +3,12 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <string name="history_bean_item_image_view_content_description">历史记录照片</string>
+    <string name="history_bean_item_text_time">时间：</string>
+    <string name="history_bean_item_text_static_time_content">2018年4月20日 15:28:49</string>
+    <string name="history_bean_item_text_static_location">地点：</string>
+    <string name="history_bean_item_text_static_location_content">杭州电子科技大学学源街</string>
+    <string name="history_bean_item_text_delete">删除</string>
 </resources>

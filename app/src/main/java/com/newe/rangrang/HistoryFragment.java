@@ -2,6 +2,7 @@ package com.newe.rangrang;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,22 +18,18 @@ import java.util.List;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * 展示历史记录的碎片
+ * @author Jaylen Hsieh
+ * @date 2018/04/22.
  */
 public class HistoryFragment extends Fragment {
 
     private static List<HistoryBean> mHistoryList = new ArrayList<>();
 
-
-    public HistoryFragment() {
-        // Required empty public constructor
-    }
-
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         RecyclerView recyclerView = view.findViewById(R.id.list_history);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
