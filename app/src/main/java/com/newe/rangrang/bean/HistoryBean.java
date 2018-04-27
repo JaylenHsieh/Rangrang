@@ -9,6 +9,7 @@ public class HistoryBean {
 
     private String time;
     private String location;
+    //照片在resource中的id号
     private int photo;
 
     public HistoryBean(String time, String location, int photo) {

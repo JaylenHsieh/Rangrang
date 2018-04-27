@@ -11,22 +11,33 @@ import android.net.Uri;
 import java.io.InputStream;
 
 
-
+/**
+ * 图片处理工具类
+ *
+ * @author Jaylen Hsieh
+ * @date 2018/04/27.
+ */
 public class BitmapUtils {
 
     /**
-     * @param context
-     * @param path
-     * @param targetWith
+     * 加了互斥锁的图片文件转码方法
+     *
+     * @param context 上下文
+     * @param path 图片路径
+     * @param targetWidth
      * @param targetHeight
      * @return
      */
-    public synchronized static Bitmap decodeFileBitmap(Context context, String path, int targetWith, int targetHeight) {
+    public synchronized static Bitmap decodeFileBitmap(Context context, String path, int targetWidth, int targetHeight) {
         try {
+            //进行设置
             BitmapFactory.Options options = new BitmapFactory.Options();
+            //只获取大小，为快速将布局调整好
             options.inJustDecodeBounds = true;
+            //解码
             decodeStreamToBitmap(context, path, options);
-            options.inSampleSize = calculateScaleSize(options, targetWith, targetHeight);
+            //
+            options.inSampleSize = calculateScaleSize(options, targetWidth, targetHeight);
             options.inJustDecodeBounds = false;
             Bitmap bitmap = decodeStreamToBitmap(context, path, options);
             return getNormalBitmap(bitmap, path);

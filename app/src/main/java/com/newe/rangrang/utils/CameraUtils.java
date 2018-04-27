@@ -18,28 +18,35 @@ import com.newe.rangrang.BuildConfig;
 
 import java.io.File;
 
-
+/**
+ * 相机与图库功能的工具类
+ *
+ * @author Jaylen Hsieh
+ * @date 2018/04/27.
+ */
 
 public class CameraUtils {
 
     /**
      * 打开相机
-     * @param context
-     * @param requestCode
+     *
+     * @param context     上下文
+     * @param requestCode 请求码，用于intent中启动activity打开相机
+     * @param picturePath 图片路径
      * @return
      */
-    public static void openCamera(Activity context, int requestCode, String picturePath){
+    public static void openCamera(Activity context, int requestCode, String picturePath) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(context.getPackageManager()) != null) {
             /**
              * 指定拍照存储路径
              * 7.0 及其以上使用FileProvider替换'file://'访问
              */
-            if (Build.VERSION.SDK_INT>=24){
+            if (Build.VERSION.SDK_INT >= 24) {
                 //这里的BuildConfig，需要是程序包下BuildConfig。
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(context.getApplicationContext(), BuildConfig.APPLICATION_ID+".provider",new File(picturePath)));
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(context.getApplicationContext(), BuildConfig.APPLICATION_ID + ".provider", new File(picturePath)));
                 intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            }else{
+            } else {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(picturePath)));
             }
             context.startActivityForResult(intent, requestCode);
@@ -48,37 +55,41 @@ public class CameraUtils {
 
     /**
      * 打开图库
-     * @param context
-     * @param requestCode
+     *
+     * @param context 上下文
+     * @param requestCode 请求码，用于intent中启动activity打开图库
      */
     public static void openGallery(Activity context, int requestCode) {
         Intent intent = new Intent(Intent.ACTION_PICK, null);
-        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*");
+        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         context.startActivityForResult(intent, requestCode);
     }
 
     /**
      * 从相册中返回的Uri查询到对应图片的Path
-     * @param context
-     * @param uri
-     * @return
+     *
+     * @param context 上下文
+     * @param uri 图片的通用资源标志符，用来确定图片在网络中的“坐标”
+     * @return 字符串型的图片路径，不为空表示获取成功
      */
-    public static String uriConvertPath(Context context,Uri uri){
+    public static String uriConvertPath(Context context, Uri uri) {
         String path = null;
         String scheme = uri.getScheme();
         if (scheme.equals("content")) {
-            path =getPath(context, uri);
+            path = getPath(context, uri);
         } else {
             path = uri.getEncodedPath();
         }
         return path;
     }
+
     /**
      * <br>功能简述:4.4及以上获取图片的方法
      * <br>功能详细描述:
      * <br>注意:
-     * @param context
-     * @param uri
+     *
+     * @param context 上下文
+     * @param uri 图片的通用资源标志符，用来确定图片在网络中的“坐标”
      * @return
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -121,7 +132,7 @@ public class CameraUtils {
 
 
                 final String selection = "_id=?";
-                final String[] selectionArgs = new String[] { split[1] };
+                final String[] selectionArgs = new String[]{split[1]};
 
 
                 return getDataColumn(context, contentUri, selection, selectionArgs);
@@ -130,8 +141,9 @@ public class CameraUtils {
         // MediaStore (and general)
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
 
-            if (isGooglePhotosUri(uri)){
-                return uri.getLastPathSegment();}
+            if (isGooglePhotosUri(uri)) {
+                return uri.getLastPathSegment();
+            }
 
 
             return getDataColumn(context, uri, null, null);
@@ -142,11 +154,12 @@ public class CameraUtils {
         }
         return null;
     }
+
     private static String getDataColumn(Context context, Uri uri, String selection,
-                                       String[] selectionArgs) {
+                                        String[] selectionArgs) {
         Cursor cursor = null;
         final String column = "_data";
-        final String[] projection = { column };
+        final String[] projection = {column};
         try {
             cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
                     null);
@@ -155,8 +168,9 @@ public class CameraUtils {
                 return cursor.getString(index);
             }
         } finally {
-            if (cursor != null){
-                cursor.close();}
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         return null;
     }
@@ -166,7 +180,7 @@ public class CameraUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is ExternalStorageProvider.
      */
-   private static boolean isExternalStorageDocument(Uri uri) {
+    private static boolean isExternalStorageDocument(Uri uri) {
         return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
 
@@ -175,7 +189,7 @@ public class CameraUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is DownloadsProvider.
      */
-   private static boolean isDownloadsDocument(Uri uri) {
+    private static boolean isDownloadsDocument(Uri uri) {
         return "com.android.providers.downloads.documents".equals(uri.getAuthority());
     }
 
@@ -184,7 +198,7 @@ public class CameraUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is MediaProvider.
      */
-   private static boolean isMediaDocument(Uri uri) {
+    private static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
@@ -193,7 +207,7 @@ public class CameraUtils {
      * @param uri The Uri to check.
      * @return Whether the Uri authority is Google Photos.
      */
-   private static boolean isGooglePhotosUri(Uri uri) {
+    private static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 }

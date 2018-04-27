@@ -14,7 +14,8 @@ import com.newe.rangrang.bean.HistoryBean;
 import java.util.List;
 
 /**
- * 用来适配历史记录实体类的适配器
+ * 用来适配历史记录实体类的适配器，适配器相关内容参见《第一行代码》第三章，不理解可以百度 “适配器模式” 理解理解
+ *
  * @author Jaylen Hsieh
  * @date 2018/04/22.
  */

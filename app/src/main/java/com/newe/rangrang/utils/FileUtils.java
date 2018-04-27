@@ -11,6 +11,12 @@ import java.util.Date;
 import static android.os.Environment.DIRECTORY_PICTURES;
 
 
+/**
+ * 与文件相关的工具类
+ *
+ * @author Jaylen Hsieh
+ * @date 2018/04/27.
+ */
 
 public class FileUtils {
     /**
@@ -18,7 +24,6 @@ public class FileUtils {
      * getExternalFilesDir()提供的是私有的目录，在app卸载后会被删除
      *
      * @param context
-     * @param
      * @return
      */
     public static String getBitmapDiskFile(Context context) {

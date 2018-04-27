@@ -28,7 +28,10 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * 闪光灯功能的Fragment
+ *
+ * @author Jaylen Hsieh
+ * @date 2018/04/27.
  */
 public class FlashFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
 
