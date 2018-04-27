@@ -3,30 +3,34 @@ package com.newe.rangrang;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.newe.rangrang.db.Constance;
+import com.newe.rangrang.permission.PermissionManager;
+import com.newe.rangrang.utils.ToastUtils;
+
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FlashFragment extends Fragment {
+public class FlashFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
 
     private CameraManager mCameraManager;
     private Context mContext;
@@ -34,13 +38,11 @@ public class FlashFragment extends Fragment {
     private boolean isFlashOn = false;
     private boolean isGlitter = false;
 
+    private String cameraPermission = Manifest.permission.CAMERA;
+    private final int PERMISSION_REQUEST_CAMERA = 1;
+
     Timer mTimer;
     TimerTask mTimerTask;
-
-
-    private ScheduledExecutorService mExecutorService;
-
-    private final int PERMISSION_REQUEST_CAMERA = 1;
 
     public FlashFragment() {
         // Required empty public constructor
@@ -65,10 +67,10 @@ public class FlashFragment extends Fragment {
             mContext = getContext();
         }
 
-        if (mTimer == null){
+        if (mTimer == null) {
             mTimer = new Timer();
         }
-        if (mTimerTask == null){
+        if (mTimerTask == null) {
             mTimerTask = new TimerTask() {
                 @Override
                 public void run() {
@@ -83,13 +85,8 @@ public class FlashFragment extends Fragment {
             };
         }
 
-        // 动态权限申请
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
-        } else {
-            openTorch(true);
-        }
 
+        checkCameraPermisson();
         // 获取相机管理器
         mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -108,13 +105,76 @@ public class FlashFragment extends Fragment {
                     Toast.makeText(getContext(), "已打开闪光灯", Toast.LENGTH_SHORT).show();
                     isFlashOn = true;
                     openTorch(true);
-                    mTimer.schedule(mTimerTask,0,500);
+                    mTimer.schedule(mTimerTask, 0, 500);
                 }
 
             }
         });
 
 
+    }
+
+    // 检查相机权限
+    private void checkCameraPermisson() {
+        boolean result = PermissionManager.checkPermission(getActivity(), Constance.PERMS_CAMERA);
+        if (!result) {
+            PermissionManager.requestPermission(getActivity(), Constance.CAMERA_PERMISSION_TIP, Constance.CAMERA_PERMISSION_CODE, Constance.PERMS_CAMERA);
+        }
+    }
+
+    /**
+     * 重写 OnRequestPermissionResult，用于接受请求结果
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // 将请求结果传递 EasyPermission库处理
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    /**
+     * 请求权限成功
+     *
+     * @param requestCode
+     * @param perms
+     */
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        ToastUtils.showToast(mContext, "授权成功");
+    }
+
+    /**
+     * 请求权限失败
+     *
+     * @param requestCode
+     * @param perms
+     */
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        ToastUtils.showToast(mContext, "权限请求被拒绝");
+        /**
+         * 若是在权限弹窗中，用户勾选了'NEVER ASK AGAIN.'或者'不在提示'，且拒绝权限。
+         * 这时候，需要跳转到设置界面去，让用户手动开启。
+         */
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(getActivity()).build().show();
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE:
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -151,15 +211,4 @@ public class FlashFragment extends Fragment {
     }
 
 
-    // 权限申请回调
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_CAMERA) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openTorch(true);
-            } else {
-                Toast.makeText(mContext, "权限被拒绝，我们需要你的相机权限来打开闪光灯", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 }
