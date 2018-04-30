@@ -42,6 +42,9 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$supportlib_version"
     implementation 'com.newe:label-view:0.2.5-alpha3'
 
+    // 音频播放器
+    implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
+
     // 腾讯的良心产品，可以在线看崩溃日志
     implementation 'com.tencent.bugly:crashreport:latest.release'
     implementation 'de.hdodenhof:circleimageview:2.1.0'

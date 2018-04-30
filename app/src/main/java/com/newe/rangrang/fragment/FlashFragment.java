@@ -75,6 +75,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_flash, container, false);
+        checkCameraPermission();
         mFab = view.findViewById(R.id.fab_flash);
         return view;
     }
@@ -94,7 +95,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkCameraPermission();
                 if (isFlashOn) {
                     // 点击后,如果闪光灯是打开的，关闭闪光灯，图标显示为手电关闭，提示用户已关闭闪光灯
                     mFab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_flash_off, getActivity().getTheme()));

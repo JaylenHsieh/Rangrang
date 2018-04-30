@@ -3,7 +3,6 @@ package com.newe.rangrang.fragment;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -19,28 +18,26 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.newe.rangrang.MainActivity;
 import com.newe.rangrang.R;
 import com.newe.rangrang.db.Constance;
 import com.newe.rangrang.permission.PermissionManager;
@@ -52,9 +49,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import butterknife.OnTextChanged;
 import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
 import pub.devrel.easypermissions.AppSettingsDialog;
@@ -96,6 +91,10 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
      */
     private boolean isTrumpetOn = false;
 
+    /**
+     * 默认透明度为0
+     */
+    private boolean isAlpha = false;
 
     public ScreenFragment() {
         // Required empty public constructor
@@ -111,7 +110,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
             mContext = getContext();
         }
         unbinder = ButterKnife.bind(this, view);
-
+        checkCameraPermission();
         initSurfaceView(view);
 
         return view;
@@ -156,7 +155,6 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
             //这里必须传入mainHandler，因为涉及到了 ui 操作
             mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mainHandler);
             mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
-
             checkCameraPermission();
             mCameraManager.openCamera(mCameraId, deviceStateCallback, mHandler);
         } catch (CameraAccessException e) {
@@ -257,7 +255,9 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
 
     public void takePicture() {
         try {
-            CaptureRequest.Builder captureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);//用来设置拍照请求的request
+            //用来设置拍照请求的request
+            CaptureRequest.Builder captureRequestBuilder
+                    = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureRequestBuilder.addTarget(mImageReader.getSurface());
             // 自动对焦
             captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
@@ -265,7 +265,10 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
             captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
             int rotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
             CameraCharacteristics cameraCharacteristics = mCameraManager.getCameraCharacteristics(mCameraId);
-            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, getJpegOrientation(cameraCharacteristics, rotation));//使图片做顺时针旋转
+            //使图片做顺时针旋转
+            captureRequestBuilder
+                    .set(CaptureRequest.JPEG_ORIENTATION,
+                            getJpegOrientation(cameraCharacteristics, rotation));
             CaptureRequest mCaptureRequest = captureRequestBuilder.build();
             mSession.capture(mCaptureRequest, null, mHandler);
         } catch (CameraAccessException e) {
@@ -291,7 +294,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
 
     //获取图片应该旋转的角度，使图片竖直
     private int getJpegOrientation(CameraCharacteristics c, int deviceOrientation) {
-        if (deviceOrientation == android.view.OrientationEventListener.ORIENTATION_UNKNOWN) {
+        if (deviceOrientation == OrientationEventListener.ORIENTATION_UNKNOWN) {
             return 0;
         }
 
@@ -351,9 +354,39 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
+    private void setWindowBrightness(float brightness) {
+        Window window = getActivity().getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.screenBrightness = brightness / 255.0f;
+        window.setAttributes(lp);
+    }
+
+    CountDownTimer countDownTimer = new CountDownTimer(Long.MAX_VALUE, 300) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            isAlpha = !isAlpha;
+            setAlpha(isAlpha);
+        }
+
+        @Override
+        public void onFinish() {
+            isAlpha = false;
+            setAlpha(isAlpha);
+        }
+    };
+
+    private void setAlpha(boolean isAlpha) {
+        if (isAlpha) {
+            mImgBackground.setAlpha(255);
+        } else {
+            mImgBackground.setAlpha(0);
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        setWindowBrightness(WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
         unbinder.unbind();
     }
 
@@ -362,25 +395,32 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
         switch (view.getId()) {
             case R.id.fab_sound:
                 checkStoragePermission();
+
                 if (isTrumpetOn) {
                     // 点击后，如果扬声器是打开的，关闭提示音，图标显示为喇叭关闭，提示用户已关闭提示音
                     mFabSound.setImageDrawable(getResources().getDrawable(R.mipmap.ic_volume_off_white_24dp));
-                    Toast.makeText(getContext(), "已关闭提示音", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "已关闭提示音，屏幕亮度已恢复正常", Toast.LENGTH_SHORT).show();
+                    // 取消屏幕最亮模式
+                    setWindowBrightness(WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+                    countDownTimer.cancel();
                     isTrumpetOn = false;
                 } else {
                     mFabSound.setImageDrawable(getResources().getDrawable(R.mipmap.ic_volume_up_white_24dp));
-                    Toast.makeText(getContext(), "已打开提示音", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "已打开提示音,屏幕亮度已调节为最高", Toast.LENGTH_SHORT).show();
+                    // 调节屏幕为最亮模式
+                    setWindowBrightness(255);
+                    // 倒计时开始
+                    countDownTimer.start();
                     isTrumpetOn = true;
                 }
                 break;
             case R.id.circleImageView:
                 break;
             case R.id.btn_capture:
+                takePicture();
                 break;
             default:
                 break;
         }
     }
-
-
 }
