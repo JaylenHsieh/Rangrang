@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.newe.rangrang.R;
 import com.newe.rangrang.db.Constance;
 import com.newe.rangrang.permission.PermissionManager;
+import com.newe.rangrang.utils.AudioUtils;
 import com.newe.rangrang.utils.ToastUtils;
 
 import java.nio.ByteBuffer;
@@ -387,6 +388,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     public void onDestroyView() {
         super.onDestroyView();
         setWindowBrightness(WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+        countDownTimer.cancel();
         unbinder.unbind();
     }
 
@@ -411,6 +413,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
                     setWindowBrightness(255);
                     // 倒计时开始
                     countDownTimer.start();
+                    AudioUtils.initPlayer(getContext());
                     isTrumpetOn = true;
                 }
                 break;
