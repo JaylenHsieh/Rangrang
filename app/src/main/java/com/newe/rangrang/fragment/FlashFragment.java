@@ -1,20 +1,26 @@
-package com.newe.rangrang;
+package com.newe.rangrang.fragment;
 
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.newe.rangrang.R;
 import com.newe.rangrang.db.Constance;
 import com.newe.rangrang.permission.PermissionManager;
 import com.newe.rangrang.utils.ToastUtils;
@@ -22,9 +28,13 @@ import com.newe.rangrang.utils.ToastUtils;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
+import rx.Observable;
+import rx.Single;
 
 
 /**
@@ -39,18 +49,26 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     private Context mContext;
     private FloatingActionButton mFab;
     private boolean isFlashOn = false;
-    private boolean isGlitter = false;
+    private boolean isGlittering = false;
 
-    private String cameraPermission = Manifest.permission.CAMERA;
-    private final int PERMISSION_REQUEST_CAMERA = 1;
-
-    Timer mTimer;
-    TimerTask mTimerTask;
 
     public FlashFragment() {
         // Required empty public constructor
     }
 
+    CountDownTimer mCountDownTimer = new CountDownTimer(Long.MAX_VALUE, 500) {
+        @Override
+        public void onTick(long l) {
+            isGlittering = !isGlittering;
+            openTorch(isGlittering);
+        }
+
+        @Override
+        public void onFinish() {
+            isGlittering = false;
+            openTorch(isGlittering);
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,101 +88,40 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
             mContext = getContext();
         }
 
-        if (mTimer == null) {
-            mTimer = new Timer();
-        }
-        if (mTimerTask == null) {
-            mTimerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    if (isGlitter) {
-                        isGlitter = false;
-                        openTorch(false);
-                    } else {
-                        isGlitter = true;
-                        openTorch(true);
-                    }
-                }
-            };
-        }
 
-
-        checkCameraPermisson();
         // 获取相机管理器
         mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                checkCameraPermission();
                 if (isFlashOn) {
                     // 点击后,如果闪光灯是打开的，关闭闪光灯，图标显示为手电关闭，提示用户已关闭闪光灯
-                    mFab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_flash_off));
+                    mFab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_flash_off, getActivity().getTheme()));
                     Toast.makeText(getContext(), "已关闭闪光灯", Toast.LENGTH_SHORT).show();
                     isFlashOn = false;
                     openTorch(false);
-                    mTimer.cancel();
-                    mTimerTask.cancel();
+                    mCountDownTimer.cancel();
                 } else {
                     mFab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_flash_on));
                     Toast.makeText(getContext(), "已打开闪光灯", Toast.LENGTH_SHORT).show();
                     isFlashOn = true;
                     openTorch(true);
-                    mTimer.schedule(mTimerTask, 0, 500);
+                    mCountDownTimer.start();
                 }
-
             }
         });
 
 
     }
 
-    // 检查相机权限
-    private void checkCameraPermisson() {
+    /**
+     * 检查相机权限
+     */
+    private void checkCameraPermission() {
         boolean result = PermissionManager.checkPermission(getActivity(), Constance.PERMS_CAMERA);
         if (!result) {
             PermissionManager.requestPermission(getActivity(), Constance.CAMERA_PERMISSION_TIP, Constance.CAMERA_PERMISSION_CODE, Constance.PERMS_CAMERA);
-        }
-    }
-
-    /**
-     * 重写 OnRequestPermissionResult，用于接受请求结果
-     *
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // 将请求结果传递 EasyPermission库处理
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    /**
-     * 请求权限成功
-     *
-     * @param requestCode
-     * @param perms
-     */
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        ToastUtils.showToast(mContext, "授权成功");
-    }
-
-    /**
-     * 请求权限失败
-     *
-     * @param requestCode
-     * @param perms
-     */
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        ToastUtils.showToast(mContext, "权限请求被拒绝");
-        /**
-         * 若是在权限弹窗中，用户勾选了'NEVER ASK AGAIN.'或者'不在提示'，且拒绝权限。
-         * 这时候，需要跳转到设置界面去，让用户手动开启。
-         */
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            new AppSettingsDialog.Builder(getActivity()).build().show();
         }
     }
 
@@ -194,8 +151,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
                 e.printStackTrace();
             }
         }
-        mTimerTask.cancel();
-        mTimer.cancel();
     }
 
     /**
@@ -214,4 +169,20 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     }
 
 
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        ToastUtils.showToast(mContext, "用户授权成功");
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        ToastUtils.showToast(mContext, "用户授权失败");
+        /**
+         * 若是在权限弹窗中，用户勾选了'NEVER ASK AGAIN.'或者'不在提示'，且拒绝权限。
+         * 这时候，需要跳转到设置界面去，让用户手动开启。
+         */
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        }
+    }
 }

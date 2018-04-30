@@ -5,6 +5,10 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.widget.Toast
+import com.newe.rangrang.fragment.FlashFragment
+import com.newe.rangrang.fragment.HistoryFragment
+import com.newe.rangrang.fragment.ProfileFragment
+import com.newe.rangrang.fragment.ScreenFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

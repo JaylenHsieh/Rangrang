@@ -18,7 +18,7 @@ public final class Constance {
     //手机写文件
     public final static int WRITE_PERMISSION_CODE = 2;
     public final static String WRITE_PERMISSION_TIP = "我们需要手机的读写权限来保存您的照片";
-    public final static String[] PERMS_WRITE = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    public final static String[] PERMS_WRITE = {Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE};
 
     //没搞清啥功能的两个code
     public final static int PICTURE_CODE = 10;

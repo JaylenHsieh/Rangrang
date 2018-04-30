@@ -1,4 +1,4 @@
-package com.newe.rangrang;
+package com.newe.rangrang.fragment;
 
 
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.newe.rangrang.R;
 
 
 /**
