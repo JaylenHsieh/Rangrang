@@ -17,8 +17,10 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaScannerConnection;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -44,8 +46,14 @@ import com.newe.rangrang.permission.PermissionManager;
 import com.newe.rangrang.utils.AudioUtils;
 import com.newe.rangrang.utils.ToastUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -86,6 +94,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     private CaptureRequest.Builder mPreviewBuilder;
     private CameraCaptureSession mSession;
     private Handler mainHandler;
+    private String pictureId;
 
     /**
      * 默认关闭提示音
@@ -383,6 +392,8 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
             mImgBackground.setAlpha(0);
         }
     }
+
+
 
     @Override
     public void onDestroyView() {

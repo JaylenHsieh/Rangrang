@@ -48,7 +48,7 @@ dependencies {
     // 腾讯的良心产品，可以在线看崩溃日志
     implementation 'com.tencent.bugly:crashreport:latest.release'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
-    // 安卓开发神器 Butterknife,可以方便的绑定各种控件并且快速添加点击事件
+    // 安卓开发神器 ButterKnife,可以方便的绑定各种控件并且快速添加点击事件
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
@@ -60,6 +60,6 @@ dependencies {
     implementation 'com.roughike:bottom-bar:2.3.1'
     implementation 'com.android.support:support-v4:27.1.1'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
