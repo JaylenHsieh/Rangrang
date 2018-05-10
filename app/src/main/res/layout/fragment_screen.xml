@@ -7,13 +7,15 @@
     tools:context=".fragment.ScreenFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
     <ImageView
         android:id="@+id/img_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@mipmap/red" />
+        android:src="@mipmap/red"
+        tools:layout_editor_absoluteX="116dp"
+        tools:layout_editor_absoluteY="0dp" />
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_sound"
@@ -21,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="32dp"
         android:src="@mipmap/ic_volume_up_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -32,8 +34,8 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginBottom="16dp"
-        android:layout_marginStart="16dp"
-        android:src="@drawable/ic_launcher_foreground"
+        android:layout_marginStart="32dp"
+        android:src="@mipmap/ic_picture_def"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -45,17 +47,50 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/btn_capture"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="16dp"
+        android:id="@+id/btn_start_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_btn"
+        android:text="start"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_sound"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/fab_sound" />
+
+    <TextView
+        android:id="@+id/btn_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_btn"
+        android:text="play"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_sound"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/fab_sound" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="192dp" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:background="@mipmap/ic_flash_on"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fab_sound"
-        app:layout_constraintStart_toEndOf="@+id/circleImageView" />
-
+        android:text="已录制0秒"
+        android:textColor="#fff"
+        app:layout_constraintBottom_toTopOf="@+id/btn_start_stop"
+        app:layout_constraintEnd_toEndOf="@+id/btn_play"
+        app:layout_constraintStart_toStartOf="@+id/btn_start_stop" />
 
 
 </android.support.constraint.ConstraintLayout>
