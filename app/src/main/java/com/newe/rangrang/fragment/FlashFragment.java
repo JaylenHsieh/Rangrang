@@ -98,6 +98,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
 
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -131,33 +132,34 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     public void onResume() {
         super.onResume();
 
+        CountDownTimer mCountDownTimer = new CountDownTimer(mPreferences.getInt("second",15)*1000, 500) {
+            @Override
+            public void onTick(long l) {
+                isGlittering = !isGlittering;
+                openTorch(isGlittering);
+            }
+
+            @Override
+            public void onFinish() {
+                isGlittering = false;
+                openTorch(isGlittering);
+                // 计时结束销毁，避免占用硬件
+                if (mCameraManager != null) {
+                    try {
+                        mCameraManager.setTorchMode("0", false);
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
         // 获取相机管理器
         mCameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CountDownTimer mCountDownTimer = new CountDownTimer(mPreferences.getInt("second",15)*1000, 500) {
-                    @Override
-                    public void onTick(long l) {
-                        isGlittering = !isGlittering;
-                        openTorch(isGlittering);
-                    }
 
-                    @Override
-                    public void onFinish() {
-                        isGlittering = false;
-                        openTorch(isGlittering);
-                        // 计时结束销毁，避免占用硬件
-                        if (mCameraManager != null) {
-                            try {
-                                mCameraManager.setTorchMode("0", false);
-                            } catch (CameraAccessException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        initSurfaceView(view);
-                    }
-                };
                 if (isFlashOn) {
                     // 点击后,如果闪光灯是打开的，关闭闪光灯，图标显示为手电关闭，提示用户已关闭闪光灯
                     mFab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_flash_off, getActivity().getTheme()));
