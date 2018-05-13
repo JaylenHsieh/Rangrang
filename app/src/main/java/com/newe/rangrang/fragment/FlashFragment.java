@@ -254,6 +254,13 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (mCameraManager != null) {
+            try {
+                mCameraManager.setTorchMode("0", false);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+        }
         unbinder.unbind();
     }
 

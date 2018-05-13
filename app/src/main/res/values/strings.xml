@@ -11,4 +11,5 @@
     <string name="history_bean_item_text_static_location">地点：</string>
     <string name="history_bean_item_text_static_location_content">杭州电子科技大学学源街</string>
     <string name="history_bean_item_text_delete">删除</string>
+    <string name="text_stop">停</string>
 </resources>

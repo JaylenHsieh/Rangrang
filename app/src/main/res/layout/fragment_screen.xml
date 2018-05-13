@@ -13,8 +13,10 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:src="@mipmap/red"
-        tools:layout_editor_absoluteX="116dp"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <android.support.design.widget.FloatingActionButton
@@ -30,12 +32,12 @@
 
     <!--提供预览功能，以及选取相册选取他图片的功能-->
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/circleImageView"
+        android:id="@+id/circleImageView_screen"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginBottom="16dp"
         android:layout_marginStart="32dp"
-        android:src="@mipmap/ic_picture_def"
+        android:src="@mipmap/img_road"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -91,6 +93,22 @@
         app:layout_constraintBottom_toTopOf="@+id/btn_start_stop"
         app:layout_constraintEnd_toEndOf="@+id/btn_play"
         app:layout_constraintStart_toStartOf="@+id/btn_start_stop" />
+
+    <TextView
+        android:id="@+id/tv_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/text_stop"
+        android:textColor="#fff"
+        android:textSize="256sp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_time"
+        app:layout_constraintEnd_toEndOf="@+id/img_background"
+        app:layout_constraintStart_toStartOf="@+id/img_background"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

@@ -3,15 +3,11 @@
     <tab
         id="@+id/tab_flash"
         icon="@drawable/tab_icon_flash"
-        title="闪光灯" />
+        title="闪光模式" />
     <tab
         id="@+id/tab_screen"
         icon="@drawable/tab_icon_screen"
-        title="屏幕图片" />
-    <tab
-        id="@+id/tab_history"
-        icon="@drawable/tab_icon_history"
-        title="历史记录"/>
+        title="屏图模式" />
     <tab
         id="@+id/tab_profile"
         icon="@drawable/tab_icon_profile"

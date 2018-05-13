@@ -12,7 +12,6 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.Guideline;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -23,7 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,18 +56,8 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     ImageView mImgBackground;
     @BindView(R.id.fab_sound)
     FloatingActionButton mFabSound;
-    @BindView(R.id.circleImageView)
-    CircleImageView mImageView;
-    @BindView(R.id.surface_view)
-    SurfaceView mSurfaceView;
-    @BindView(R.id.btn_start_stop)
-    TextView mBtnStartStop;
-    @BindView(R.id.btn_play)
-    TextView mBtnPlay;
-    @BindView(R.id.guideline)
-    Guideline mGuideline;
-    @BindView(R.id.tv_time)
-    TextView mTvTime;
+    @BindView(R.id.tv_stop)
+    TextView mTvStop;
     Unbinder unbinder;
 
 
@@ -81,16 +71,16 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     /**
      * 默认透明度为0
      */
-    private boolean isAlpha = false;
+    private boolean isBackgroundHidden = false;
 
     /**
      * 是否正在录像
      */
-    private boolean mStartedFlg = false;
+    private boolean isRecording = false;
     /**
      * 是否正在播放录像
      */
-    private boolean mIsPlay = false;
+    private boolean isPlayingRecord = false;
 
     private static final String TAG = "MainActivity";
     private MediaRecorder mRecorder;
@@ -100,9 +90,11 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     private String path;
     private int time = 0;
 
-    public ScreenFragment() {
-        // Required empty public constructor
-    }
+    private CircleImageView mImageView;
+    private TextView mTvTime;
+    private TextView mBtnStartStop;
+    private TextView mBtnPlay;
+    private SurfaceView mSurfaceView;
 
 
     private android.os.Handler handler = new android.os.Handler();
@@ -115,6 +107,10 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
         }
     };
 
+    public ScreenFragment() {
+        // Required empty public constructor
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -123,6 +119,12 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
         if (mContext == null) {
             mContext = getContext();
         }
+        mImageView = view.findViewById(R.id.circleImageView_screen);
+        mSurfaceView = view.findViewById(R.id.surface_view);
+        mBtnStartStop = view.findViewById(R.id.btn_start_stop);
+        mBtnPlay = view.findViewById(R.id.btn_play);
+        mTvTime = view.findViewById(R.id.tv_time);
+
         unbinder = ButterKnife.bind(this, view);
         checkCameraPermission();
 
@@ -133,6 +135,121 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mBtnStartStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isPlayingRecord) {
+                    if (mediaPlayer != null) {
+                        isPlayingRecord = false;
+                        mediaPlayer.stop();
+                        mediaPlayer.reset();
+                        mediaPlayer.release();
+                        mediaPlayer = null;
+                    }
+                }
+                if (!isRecording) {
+                    handler.postDelayed(runnable, 1000);
+                    mImageView.setVisibility(View.GONE);
+                    if (mRecorder == null) {
+                        mRecorder = new MediaRecorder();
+                    }
+
+                    camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+                    if (camera != null) {
+                        camera.setDisplayOrientation(90);
+                        camera.unlock();
+                        mRecorder.setCamera(camera);
+                    }
+
+                    try {
+                        // 这两项需要放在setOutputFormat之前
+                        mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+                        mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+
+                        // Set output file format
+                        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+
+                        // 这两项需要放在setOutputFormat之后
+                        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                        mRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
+
+                        mRecorder.setVideoSize(640, 480);
+                        mRecorder.setVideoFrameRate(30);
+                        mRecorder.setVideoEncodingBitRate(3 * 1024 * 1024);
+                        mRecorder.setOrientationHint(90);
+                        //设置记录会话的最大持续时间（毫秒）
+                        mRecorder.setMaxDuration(30 * 1000);
+                        mRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());
+
+                        path = getSDPath();
+                        if (path != null) {
+                            File dir = new File(path + "/Rangrang");
+                            if (!dir.exists() && !dir.mkdir()) {
+                                throw new IllegalStateException("目录不存在，且无法成功创建");
+                            }
+                            path = dir + "/" + getDate() + ".mp4";
+                            mRecorder.setOutputFile(path);
+                            mRecorder.prepare();
+                            mRecorder.start();
+                            isRecording = true;
+                            mBtnStartStop.setText("Stop");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    //stop
+                    if (isRecording) {
+                        try {
+                            handler.removeCallbacks(runnable);
+                            mRecorder.stop();
+                            mRecorder.reset();
+                            mRecorder.release();
+                            mRecorder = null;
+                            mBtnStartStop.setText("Start");
+                            if (camera != null) {
+                                camera.release();
+                                camera = null;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    isRecording = false;
+                }
+            }
+        });
+
+        mBtnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mTvStop.setVisibility(View.GONE);
+                isPlayingRecord = true;
+                mImageView.setVisibility(View.GONE);
+                if (mediaPlayer == null) {
+                    mediaPlayer = new MediaPlayer();
+                }
+                mediaPlayer.reset();
+                if (path != null) {
+                    Uri uri = Uri.parse(path);
+                    mediaPlayer = MediaPlayer.create(getContext(), uri);
+                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    mediaPlayer.setDisplay(mSurfaceHolder);
+                    try {
+                        mediaPlayer.prepare();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    mediaPlayer.start();
+                    ScaleAnimation scaleAnimation = (ScaleAnimation) AnimationUtils.loadAnimation(getContext(), R.anim.scale_larger);
+                    mSurfaceView.startAnimation(scaleAnimation);
+                } else {
+                    return;
+                }
+
+
+            }
+        });
         SurfaceHolder holder = mSurfaceView.getHolder();
         holder.addCallback(this);
         // setType必须设置，要不出错.
@@ -142,7 +259,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     @Override
     public void onResume() {
         super.onResume();
-        if (!mStartedFlg) {
+        if (!isRecording) {
             mImageView.setVisibility(View.VISIBLE);
         }
     }
@@ -194,22 +311,24 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     CountDownTimer countDownTimer = new CountDownTimer(Long.MAX_VALUE, 300) {
         @Override
         public void onTick(long millisUntilFinished) {
-            isAlpha = !isAlpha;
-            setAlpha(isAlpha);
+            isBackgroundHidden = !isBackgroundHidden;
+            setBackgroundHidden(isBackgroundHidden);
         }
 
         @Override
         public void onFinish() {
-            isAlpha = false;
-            setAlpha(isAlpha);
+            isBackgroundHidden = false;
+            setBackgroundHidden(isBackgroundHidden);
         }
     };
 
-    private void setAlpha(boolean isAlpha) {
-        if (isAlpha) {
-            mImgBackground.setAlpha(255);
+    private void setBackgroundHidden(boolean isBackgroundHidden) {
+        if (isBackgroundHidden) {
+            mImgBackground.setVisibility(View.GONE);
+            mTvStop.setTextColor(getResources().getColor(R.color.colorPrimary,getActivity().getTheme()));
         } else {
-            mImgBackground.setAlpha(0);
+            mImgBackground.setVisibility(View.VISIBLE);
+            mTvStop.setTextColor(getResources().getColor(R.color.white,getActivity().getTheme()));
         }
     }
 
@@ -220,12 +339,12 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
      */
     public static String getDate() {
         Calendar ca = Calendar.getInstance();
-        int year = ca.get(Calendar.YEAR);
-        int month = ca.get(Calendar.MONTH);
-        int day = ca.get(Calendar.DATE);
-        int minute = ca.get(Calendar.MINUTE);
-        int hour = ca.get(Calendar.HOUR);
-        int second = ca.get(Calendar.SECOND);
+        int year = ca.get(Calendar.YEAR);           // 获取年份
+        int month = ca.get(Calendar.MONTH);         // 获取月份
+        int day = ca.get(Calendar.DATE);            // 获取日
+        int minute = ca.get(Calendar.MINUTE);       // 分
+        int hour = ca.get(Calendar.HOUR);           // 小时
+        int second = ca.get(Calendar.SECOND);       // 秒
 
         String date = "" + year + (month + 1) + day + hour + minute + second;
         Log.d(TAG, "date:" + date);
@@ -241,7 +360,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     public String getSDPath() {
         File sdDir = null;
         boolean sdCardExist = Environment.getExternalStorageState()
-                .equals(android.os.Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
+                .equals(Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
         if (sdCardExist) {
             sdDir = Environment.getExternalStorageDirectory();// 获取根目录
             return sdDir.toString();
@@ -249,6 +368,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
 
         return null;
     }
+
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
@@ -289,12 +409,12 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
         unbinder.unbind();
     }
 
-    @OnClick({R.id.fab_sound, R.id.circleImageView, R.id.btn_start_stop, R.id.btn_play})
+    @OnClick({R.id.fab_sound, R.id.circleImageView_screen})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.fab_sound:
+                mTvStop.setVisibility(View.VISIBLE);
                 checkStoragePermission();
-
                 if (isTrumpetOn) {
                     // 点击后，如果扬声器是打开的，关闭提示音，图标显示为喇叭关闭，提示用户已关闭提示音
                     mFabSound.setImageDrawable(getResources().getDrawable(R.mipmap.ic_volume_off_white_24dp));
@@ -314,107 +434,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
                     isTrumpetOn = true;
                 }
                 break;
-            case R.id.circleImageView:
-                break;
-
-            case R.id.btn_start_stop:
-                if (mIsPlay) {
-                    if (mediaPlayer != null) {
-                        mIsPlay = false;
-                        mediaPlayer.stop();
-                        mediaPlayer.reset();
-                        mediaPlayer.release();
-                        mediaPlayer = null;
-                    }
-                }
-                if (!mStartedFlg) {
-                    handler.postDelayed(runnable, 1000);
-                    mImageView.setVisibility(View.GONE);
-                    if (mRecorder == null) {
-                        mRecorder = new MediaRecorder();
-                    }
-
-                    camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
-                    if (camera != null) {
-                        camera.setDisplayOrientation(90);
-                        camera.unlock();
-                        mRecorder.setCamera(camera);
-                    }
-
-                    try {
-                        // 这两项需要放在setOutputFormat之前
-                        mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-                        mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
-                        // Set output file format
-                        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-
-                        // 这两项需要放在setOutputFormat之后
-                        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                        mRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
-
-                        mRecorder.setVideoSize(640, 480);
-                        mRecorder.setVideoFrameRate(30);
-                        mRecorder.setVideoEncodingBitRate(3 * 1024 * 1024);
-                        mRecorder.setOrientationHint(90);
-                        //设置记录会话的最大持续时间（毫秒）
-                        mRecorder.setMaxDuration(30 * 1000);
-                        mRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());
-
-                        path = getSDPath();
-                        if (path != null) {
-                            File dir = new File(path + "/recordtest");
-                            if (!dir.exists()) {
-                                dir.mkdir();
-                            }
-                            path = dir + "/" + getDate() + ".mp4";
-                            mRecorder.setOutputFile(path);
-                            mRecorder.prepare();
-                            mRecorder.start();
-                            mStartedFlg = true;
-                            mBtnStartStop.setText("Stop");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    //stop
-                    if (mStartedFlg) {
-                        try {
-                            handler.removeCallbacks(runnable);
-                            mRecorder.stop();
-                            mRecorder.reset();
-                            mRecorder.release();
-                            mRecorder = null;
-                            mBtnStartStop.setText("Start");
-                            if (camera != null) {
-                                camera.release();
-                                camera = null;
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    mStartedFlg = false;
-                }
-                break;
-            case R.id.btn_play:
-                mIsPlay = true;
-                mImageView.setVisibility(View.GONE);
-                if (mediaPlayer == null) {
-                    mediaPlayer = new MediaPlayer();
-                }
-                mediaPlayer.reset();
-                Uri uri = Uri.parse(path);
-                mediaPlayer = MediaPlayer.create(getContext(), uri);
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mediaPlayer.setDisplay(mSurfaceHolder);
-                try {
-                    mediaPlayer.prepare();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                mediaPlayer.start();
+            case R.id.circleImageView_screen:
                 break;
             default:
                 break;

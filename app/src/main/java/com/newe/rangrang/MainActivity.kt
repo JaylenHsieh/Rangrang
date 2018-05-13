@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
             when(tabId){
                 R.id.tab_flash -> replaceFragment(FlashFragment())
                 R.id.tab_screen -> replaceFragment(ScreenFragment())
-                R.id.tab_history -> replaceFragment(HistoryFragment())
                 R.id.tab_profile -> replaceFragment(ProfileFragment())
                 else -> Toast.makeText(this,"出错啦",Toast.LENGTH_SHORT).show()
             }
