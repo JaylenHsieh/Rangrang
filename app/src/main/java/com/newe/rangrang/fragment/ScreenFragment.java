@@ -119,6 +119,8 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
         if (mContext == null) {
             mContext = getContext();
         }
+        checkCameraPermission();
+        checkStoragePermission();
         mImageView = view.findViewById(R.id.circleImageView_screen);
         mSurfaceView = view.findViewById(R.id.surface_view);
         mBtnStartStop = view.findViewById(R.id.btn_start_stop);
@@ -126,7 +128,6 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
         mTvTime = view.findViewById(R.id.tv_time);
 
         unbinder = ButterKnife.bind(this, view);
-        checkCameraPermission();
 
         return view;
     }
@@ -138,6 +139,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
         mBtnStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mTvTime.setVisibility(View.VISIBLE);
                 if (isPlayingRecord) {
                     if (mediaPlayer != null) {
                         isPlayingRecord = false;
@@ -224,6 +226,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
             @Override
             public void onClick(View view) {
                 mTvStop.setVisibility(View.GONE);
+                mTvTime.setVisibility(View.GONE);
                 isPlayingRecord = true;
                 mImageView.setVisibility(View.GONE);
                 if (mediaPlayer == null) {

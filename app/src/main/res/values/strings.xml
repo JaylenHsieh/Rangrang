@@ -12,4 +12,6 @@
     <string name="history_bean_item_text_static_location_content">杭州电子科技大学学源街</string>
     <string name="history_bean_item_text_delete">删除</string>
     <string name="text_stop">停</string>
+    <string name="text_start_record">秒后停止闪光并自动拍摄</string>
+    <string name="camera_permission_tip">我们需要手机的相机权限来打开闪光灯和拍摄视频，也需要手机的读写权限来保存和播放您的视频</string>
 </resources>

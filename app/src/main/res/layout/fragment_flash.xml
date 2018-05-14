@@ -55,105 +55,28 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:text="秒钟后将停止闪光灯\n并自动开始记录路况"
+        android:text="@string/text_start_record"
         app:layout_constraintBottom_toBottomOf="@+id/secondPicker"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toTopOf="@+id/secondPicker"
-        app:layout_constraintVertical_bias="0.57" />
+        app:layout_constraintTop_toTopOf="@+id/secondPicker" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="192dp" />
-    <!--<TextView-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="20dp"-->
-    <!--android:gravity="center"-->
-    <!--android:text="V"-->
-    <!--app:layout_constraintBottom_toTopOf="@+id/linearLayout"-->
-    <!--app:layout_constraintEnd_toEndOf="parent"-->
-    <!--app:layout_constraintStart_toStartOf="parent" />-->
+        app:layout_constraintGuide_begin="144dp" />
 
-    <!--<View-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0.5dp"-->
-    <!--android:background="@android:color/darker_gray"/>-->
-
-    <!--<LinearLayout-->
-
-    <!--android:id="@+id/linearLayout"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_marginBottom="16dp"-->
-    <!--android:orientation="horizontal"-->
-    <!--app:layout_constraintBottom_toTopOf="@+id/bt_main"-->
-    <!--app:layout_constraintEnd_toEndOf="parent"-->
-    <!--app:layout_constraintStart_toStartOf="parent">-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/iv_left"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:layout_marginLeft="2dp"-->
-    <!--android:layout_weight="1"-->
-    <!--android:gravity="center"-->
-    <!--android:text="＜"-->
-    <!--android:textSize="16sp" />-->
-
-
-    <!--<com.newe.horizontalselectedviewlib.HorizontalSelectedView-->
-    <!--android:id="@+id/hd_main"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:layout_gravity="center_vertical"-->
-    <!--android:layout_weight="30"-->
-    <!--app:HorizontalSelectedViewSeeSize="5"-->
-    <!--app:HorizontalSelectedViewSelectedTextColor="#000"-->
-    <!--app:HorizontalSelectedViewSelectedTextSize="50"-->
-    <!--app:HorizontalSelectedViewTextSize="40"-->
-    <!--app:HorizontalSelectedViewTextColor="#fffaaa" />-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/iv_right"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:layout_marginRight="2dp"-->
-    <!--android:layout_weight="1"-->
-    <!--android:gravity="center"-->
-    <!--android:text="＞"-->
-    <!--android:textSize="16sp" />-->
-
-    <!--</LinearLayout>-->
-
-    <!--<View-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0.5dp"-->
-    <!--android:background="@android:color/darker_gray"/>-->
-
-    <!--<Button-->
-    <!--android:id="@+id/bt_main"-->
-    <!--android:layout_width="200dp"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_gravity="center_horizontal"-->
-    <!--android:layout_marginBottom="16dp"-->
-    <!--android:layout_marginEnd="36dp"-->
-    <!--android:layout_marginStart="36dp"-->
-    <!--android:text="点击获得被选文本"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintEnd_toStartOf="@+id/fab_flash"-->
-    <!--app:layout_constraintStart_toEndOf="@+id/circleImageView" />-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/tv_main"-->
-    <!--android:layout_width="10dp"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_gravity="center_horizontal"-->
-    <!--android:gravity="center"-->
-    <!--android:padding="5dp"-->
-    <!--android:textSize="20sp"-->
-    <!--app:layout_constraintStart_toStartOf="parent"-->
-    <!--app:layout_constraintTop_toTopOf="parent" />-->
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="已录制0秒"
+        app:layout_constraintEnd_toEndOf="@+id/surface_view"
+        app:layout_constraintStart_toStartOf="@+id/surface_view"
+        app:layout_constraintTop_toBottomOf="@+id/surface_view" />
 
 </android.support.constraint.ConstraintLayout>

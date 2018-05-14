@@ -12,8 +12,11 @@ public final class Constance {
 
     //相机
     public final static int CAMERA_PERMISSION_CODE = 1;
-    public final static String CAMERA_PERMISSION_TIP = "我们需要手机的相机权限来打开闪光灯和拍摄相片";
-    public final static String[] PERMS_CAMERA = {Manifest.permission.CAMERA};
+    public final static String CAMERA_PERMISSION_TIP = "我们需要手机的相机权限来打开闪光灯和拍摄视频，也需要手机的读写权限来保存和播放您的视频";
+    public final static String[] PERMS_CAMERA = {Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE};
 
     //手机写文件
     public final static int WRITE_PERMISSION_CODE = 2;
