@@ -76,7 +76,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     private Context mContext;
     private boolean isFlashOn = false;
     private boolean isGlittering = false;
-
+    private CountDownTimer mCountDownTimer;
     /**
      * 是否正在录像
      */
@@ -94,11 +94,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     private String path;
     private int time = 0;
 
-
-    private SharedPreferences mPreferences;
-    private SharedPreferences.Editor mEditor;
-
-
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
         @Override
@@ -108,10 +103,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
             handler.postDelayed(this, 1000);
         }
     };
-
-    public FlashFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -124,7 +115,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         }
         checkCameraPermission();
         unbinder = ButterKnife.bind(this, view);
-        //initSurfaceView(view);
         initPicker();
         return view;
     }
@@ -137,7 +127,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         mSecondPicker.setMaxValue(50);
         mSecondPicker.setMinValue(5);
         // 从SharedPreferences里面读取上次设定的值
-        mPreferences = mContext.getSharedPreferences("data", Context.MODE_PRIVATE);
+        SharedPreferences mPreferences = mContext.getSharedPreferences("data", Context.MODE_PRIVATE);
         mSecondPicker.setValue(mPreferences.getInt("second", 15));
     }
 
@@ -145,8 +135,9 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     @Override
     public void onResume() {
         super.onResume();
-
-        CountDownTimer mCountDownTimer = new CountDownTimer(mPreferences.getInt("second", 15) * 1000, 500) {
+        //获取sharedpreference
+        mCountDownTimer = new CountDownTimer(
+                mContext.getSharedPreferences("data", Context.MODE_PRIVATE).getInt("second", 15) * 1000, 500) {
             @Override
             public void onTick(long l) {
                 isGlittering = !isGlittering;
@@ -173,7 +164,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (isFlashOn) {
                     // 点击后,如果闪光灯是打开的，关闭闪光灯，图标显示为手电关闭，提示用户已关闭闪光灯
                     mFab.setImageDrawable(getResources().getDrawable(R.mipmap.ic_flash_off, getActivity().getTheme()));
@@ -190,8 +180,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
                 }
             }
         });
-
-
     }
 
     /**
@@ -203,7 +191,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
             PermissionManager.requestPermission(getActivity(), Constance.CAMERA_PERMISSION_TIP, Constance.CAMERA_PERMISSION_CODE, Constance.PERMS_CAMERA);
         }
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -225,6 +212,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
 
         if (mCameraManager != null) {
             try {
+                mCountDownTimer.cancel();
                 mCameraManager.setTorchMode("0", false);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
@@ -235,7 +223,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     /**
      * 控制闪光灯的打开和关闭
      *
-     * @param enable
+     * @param enable 开关
      */
     private void openTorch(boolean enable) {
         if (mCameraManager != null) {
@@ -247,7 +235,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         }
     }
 
-
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
         ToastUtils.showToast(mContext, "用户授权成功");
@@ -256,7 +243,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         ToastUtils.showToast(mContext, "用户授权失败");
-        /**
+        /*
          * 若是在权限弹窗中，用户勾选了'NEVER ASK AGAIN.'或者'不在提示'，且拒绝权限。
          * 这时候，需要跳转到设置界面去，让用户手动开启。
          */
@@ -270,6 +257,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         super.onDestroyView();
         if (mCameraManager != null) {
             try {
+                mCountDownTimer.cancel();
                 mCameraManager.setTorchMode("0", false);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
@@ -287,7 +275,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
      */
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-        mEditor = mContext.getSharedPreferences("data", Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor mEditor = mContext.getSharedPreferences("data", Context.MODE_PRIVATE).edit();
         mEditor.putInt("second", newVal);
         mEditor.apply();
     }
@@ -370,21 +358,20 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
             }
         } else {
             //stop
-            if (isRecording) {
-                try {
-                    handler.removeCallbacks(runnable);
-                    mRecorder.stop();
-                    mRecorder.reset();
-                    mRecorder.release();
-                    mRecorder = null;
-                    if (camera != null) {
-                        camera.release();
-                        camera = null;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+            try {
+                handler.removeCallbacks(runnable);
+                mRecorder.stop();
+                mRecorder.reset();
+                mRecorder.release();
+                mRecorder = null;
+                if (camera != null) {
+                    camera.release();
+                    camera = null;
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
             isRecording = false;
         }
     }
@@ -416,7 +403,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     /**
      * 获取系统时间
      *
-     * @return
+     * @return 系统时间字符串
      */
     public static String getDate() {
         Calendar ca = Calendar.getInstance();
@@ -436,17 +423,18 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     /**
      * 获取SD path
      *
-     * @return
+     * @return SD路径，null表示sd卡不存在
      */
     public String getSDPath() {
-        File sdDir = null;
+        File sdDir;
+        // 判断sd卡是否存在
         boolean sdCardExist = Environment.getExternalStorageState()
-                .equals(Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
+                .equals(Environment.MEDIA_MOUNTED);
         if (sdCardExist) {
-            sdDir = Environment.getExternalStorageDirectory();// 获取根目录
+            // 获取根目录
+            sdDir = Environment.getExternalStorageDirectory();
             return sdDir.toString();
         }
-
         return null;
     }
 
