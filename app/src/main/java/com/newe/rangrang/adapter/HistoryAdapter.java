@@ -22,23 +22,24 @@ import java.util.List;
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHolder> {
 
     private List<HistoryBean> mHistoryList;
-
+//将数据转化为视图的类
     static class MyViewHolder extends RecyclerView.ViewHolder{
         ImageView photo;
         TextView time;
         TextView location;
-        TextView btnDalete;
+        TextView btnDelete;
 
         MyViewHolder(View view){
             super(view);
             photo = view.findViewById(R.id.img_photo);
             time = view.findViewById(R.id.tv_time);
             location = view.findViewById(R.id.tv_location);
-            btnDalete = view.findViewById(R.id.tv_delete);
+            btnDelete = view.findViewById(R.id.tv_delete);
         }
     }
 
     public HistoryAdapter(List<HistoryBean> historyList){
+        //在构造方法中把数据源保存到类内部
         mHistoryList = historyList;
     }
 
@@ -47,7 +48,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_history, parent,false);
         final MyViewHolder holder = new MyViewHolder(view);
-        holder.btnDalete.setOnClickListener(new View.OnClickListener() {
+//删除按钮逻辑设置
+        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int position = holder.getAdapterPosition();

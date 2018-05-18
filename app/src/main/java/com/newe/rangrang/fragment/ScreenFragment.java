@@ -48,7 +48,10 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * 出示红牌的fragment
+ *
+ * @author Jaylen Hsieh
+ * @date 2018/04/22.
  */
 public class ScreenFragment extends Fragment implements EasyPermissions.PermissionCallbacks, SurfaceHolder.Callback {
 
@@ -96,7 +99,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     private TextView mBtnPlay;
     private SurfaceView mSurfaceView;
 
-
+//下面两个成员变量是为了开启线程用的
     private android.os.Handler handler = new android.os.Handler();
     private Runnable runnable = new Runnable() {
         @Override
@@ -107,18 +110,15 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
         }
     };
 
-    public ScreenFragment() {
-        // Required empty public constructor
-    }
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_screen, container, false);
         if (mContext == null) {
             mContext = getContext();
         }
+        //检查权限与绑定视图
         checkCameraPermission();
         checkStoragePermission();
         mImageView = view.findViewById(R.id.circleImageView_screen);
@@ -182,7 +182,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
                         //设置记录会话的最大持续时间（毫秒）
                         mRecorder.setMaxDuration(30 * 1000);
                         mRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());
-
+//设置文件的路径
                         path = getSDPath();
                         if (path != null) {
                             File dir = new File(path + "/Rangrang");
@@ -338,7 +338,7 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     /**
      * 获取系统时间
      *
-     * @return
+     * @return 系统时间字符串
      */
     public static String getDate() {
         Calendar ca = Calendar.getInstance();
@@ -358,10 +358,10 @@ public class ScreenFragment extends Fragment implements EasyPermissions.Permissi
     /**
      * 获取SD path
      *
-     * @return
+     * @return SD存储路径字符串
      */
     public String getSDPath() {
-        File sdDir = null;
+        File sdDir;
         boolean sdCardExist = Environment.getExternalStorageState()
                 .equals(Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
         if (sdCardExist) {

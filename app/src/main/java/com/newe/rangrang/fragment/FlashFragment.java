@@ -99,6 +99,7 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         @Override
         public void run() {
             time++;
+            //这里本应使用@string 和正则表达式把字符串放在一起统一管理，但担心不好理解就这样了
             mTvTime.setText("已录制" + time + "s");
             handler.postDelayed(this, 1000);
         }
@@ -107,7 +108,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_flash, container, false);
         // 获取 context
         if (mContext == null) {
@@ -130,7 +130,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         SharedPreferences mPreferences = mContext.getSharedPreferences("data", Context.MODE_PRIVATE);
         mSecondPicker.setValue(mPreferences.getInt("second", 15));
     }
-
 
     @Override
     public void onResume() {
@@ -279,7 +278,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         mEditor.putInt("second", newVal);
         mEditor.apply();
     }
-
 
     @Override
     public void onScrollStateChange(NumberPicker view, int scrollState) {
@@ -438,7 +436,6 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         return null;
     }
 
-
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         mSurfaceHolder = surfaceHolder;
@@ -470,4 +467,3 @@ public class FlashFragment extends Fragment implements EasyPermissions.Permissio
         }
     }
 }
-

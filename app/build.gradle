@@ -36,6 +36,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //在另一个gradle里面设置$字段，方便管理多个相同版本号的开源库
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation "com.android.support:support-v4:$supportlib_version"
@@ -46,8 +47,8 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
 
     // 腾讯的良心产品，可以在线看崩溃日志
-    implementation 'com.tencent.bugly:crashreport:latest.release'
-    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation 'com.tencent.bugly:crashreport:2.6.6.1'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
     // 安卓开发神器 ButterKnife,可以方便的绑定各种控件并且快速添加点击事件
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'

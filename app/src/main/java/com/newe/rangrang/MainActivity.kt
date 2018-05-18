@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.widget.Toast
 import com.newe.rangrang.fragment.FlashFragment
-import com.newe.rangrang.fragment.HistoryFragment
-import com.newe.rangrang.fragment.ProfileFragment
 import com.newe.rangrang.fragment.ScreenFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -21,7 +19,6 @@ class MainActivity : AppCompatActivity() {
             when(tabId){
                 R.id.tab_flash -> replaceFragment(FlashFragment())
                 R.id.tab_screen -> replaceFragment(ScreenFragment())
-                R.id.tab_profile -> replaceFragment(ProfileFragment())
                 else -> Toast.makeText(this,"出错啦",Toast.LENGTH_SHORT).show()
             }
         }
